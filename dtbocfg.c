@@ -2,19 +2,19 @@
  *
  *       Copyright (C) 2016-2019 Ichiro Kawazome
  *       All rights reserved.
- * 
+ *
  *       Redistribution and use in source and binary forms, with or without
  *       modification, are permitted provided that the following conditions
  *       are met:
- * 
+ *
  *         1. Redistributions of source code must retain the above copyright
  *            notice, this list of conditions and the following disclaimer.
- * 
+ *
  *         2. Redistributions in binary form must reproduce the above copyright
  *            notice, this list of conditions and the following disclaimer in
  *            the documentation and/or other materials provided with the
  *            distribution.
- * 
+ *
  *       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -23,10 +23,10 @@
  *       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  *       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  *       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ *       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  ********************************************************************************/
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -71,10 +71,10 @@ static int dtbocfg_overlay_item_create(struct dtbocfg_overlay_item *overlay)
             goto failed;
         }
         overlay->id = ovcs_id;
-        pr_debug("%s: apply OK(id=%d)\n", __func__, ovcs_id);
+        printk("%s: apply OK(id=%d)\n", __func__, ovcs_id);
     }
 #else
-    
+
 #if (LINUX_VERSION_CODE >= 0x040700)
     of_fdt_unflatten_tree(overlay->dtbo, NULL, &overlay->node);
 #else
@@ -85,7 +85,7 @@ static int dtbocfg_overlay_item_create(struct dtbocfg_overlay_item *overlay)
         ret_val = -EINVAL;
         goto failed;
     }
-    pr_debug("%s: unflattened OK\n", __func__);
+    printk("%s: unflattened OK\n", __func__);
 
 #if (LINUX_VERSION_CODE >= 0x040F00)
     {
@@ -97,7 +97,7 @@ static int dtbocfg_overlay_item_create(struct dtbocfg_overlay_item *overlay)
             goto failed;
         }
         overlay->id = ovcs_id;
-        pr_debug("%s: apply OK(id=%d)\n", __func__, ovcs_id);
+        printk("%s: apply OK(id=%d)\n", __func__, ovcs_id);
     }
 #else
     {
@@ -108,7 +108,7 @@ static int dtbocfg_overlay_item_create(struct dtbocfg_overlay_item *overlay)
             pr_err("%s: Failed to resolve tree\n", __func__);
             goto failed;
         }
-        pr_debug("%s: resolved OK\n", __func__);
+        printk("%s: resolved OK\n", __func__);
 
         ret_val = of_overlay_create(overlay->node);
         if (ret_val < 0) {
@@ -120,7 +120,7 @@ static int dtbocfg_overlay_item_create(struct dtbocfg_overlay_item *overlay)
 #endif
 
 #endif
-    pr_debug("%s: create OK\n", __func__);
+    printk("%s: create OK\n", __func__);
     return 0;
 
   failed:
@@ -137,9 +137,9 @@ static void dtbocfg_overlay_item_release(struct dtbocfg_overlay_item *overlay)
     if (overlay->id >= 0) {
 #if (LINUX_VERSION_CODE >= 0x040F00)
         of_overlay_remove(&overlay->id);
-#else        
+#else
         of_overlay_destroy(overlay->id);
-#endif        
+#endif
         overlay->id = -1;
     }
 }
@@ -198,7 +198,7 @@ static ssize_t dtbocfg_overlay_item_status_show(struct config_item *item, char *
 /**
  * dtbocfg_overlay_item_dtbo_store() - Store Device Tree Blob to Configuration Item
  * @item : Pointer to Configuration Item
- * @page : Pointer to Value Buffer 
+ * @page : Pointer to Value Buffer
  * @count: Size of Value Buffer
  * return  Stored Size or Error Status.
  */
@@ -241,7 +241,7 @@ static ssize_t dtbocfg_overlay_item_dtbo_show(struct config_item *item, char *bu
     if (overlay->dtbo_size > PAGE_SIZE)
         return -EINVAL;
 
-    if (buf != NULL) 
+    if (buf != NULL)
         memcpy(buf, overlay->dtbo, overlay->dtbo_size);
 
     return overlay->dtbo_size;
@@ -268,7 +268,7 @@ static void dtbocfg_overlay_release(struct config_item *item)
 {
     struct dtbocfg_overlay_item *overlay = container_of_dtbocfg_overlay_item(item);
 
-    pr_debug("%s\n", __func__);
+    printk("%s\n", __func__);
 
     dtbocfg_overlay_item_release(overlay);
 
@@ -304,7 +304,7 @@ static struct config_item *dtbocfg_overlay_group_make_item(struct config_group *
 {
     struct dtbocfg_overlay_item *overlay;
 
-    pr_debug("%s\n", __func__);
+    printk("%s\n", __func__);
 
     overlay = kzalloc(sizeof(*overlay), GFP_KERNEL);
 
@@ -327,7 +327,7 @@ static void dtbocfg_overlay_group_drop_item(struct config_group *group, struct c
 {
     struct dtbocfg_overlay_item *overlay = container_of_dtbocfg_overlay_item(item);
 
-    pr_debug("%s\n", __func__);
+    printk("%s\n", __func__);
 
     config_item_put(&overlay->item);
 }
